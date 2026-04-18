@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>GateCivil — GATE Civil Engineering Prep</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{--bg:#0a0f1a;--surface:rgba(255,255,255,0.03);--border:rgba(56,189,248,0.12);--accent:#38bdf8;--accent2:#0ea5e9;--green:#10b981;--amber:#f59e0b;--purple:#8b5cf6;--text:#e2e8f0;--muted:rgba(148,163,184,0.5);--muted2:rgba(148,163,184,0.28);}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;}
+/* LOGIN */
+#login-screen{min-height:100vh;display:none;align-items:center;justify-content:center;padding:20px;position:relative;}
+#login-screen.active{display:flex;}
+.login-bg{position:absolute;inset:0;background:radial-gradient(circle at 20% 50%,rgba(14,165,233,0.08),transparent 60%),radial-gradient(circle at 80% 20%,rgba(56,189,248,0.05),transparent 50%);}
+.login-card{position:relative;width:100%;max-width:430px;background:rgba(255,255,255,0.03);border:1px solid rgba(56,189,248,0.15);border-radius:24px;padding:46px 40px;backdrop-filter:blur(20px);box-shadow:0 40px 100px rgba(0,0,0,0.5);}
+.logo{font-family:'Playfair Display',serif;font-size:32px;color:var(--accent);}
+.logo-sub{font-size:11px;color:var(--muted2);letter-spacing:3px;text-transform:uppercase;margin-top:4px;margin-bottom:30px;}
+.toggle-row{display:flex;background:rgba(255,255,255,0.05);border-radius:10px;padding:4px;margin-bottom:26px;}
+.toggle-btn{flex:1;padding:9px;border-radius:8px;border:none;background:transparent;color:var(--muted);font-size:13px;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s;}
+.toggle-btn.active{background:rgba(56,189,248,0.15);color:var(--accent);}
+.lbl{display:block;font-size:11px;letter-spacing:2px;color:var(--muted2);text-transform:uppercase;margin-bottom:7px;}
+.inp{width:100%;padding:12px 14px;background:rgba(255,255,255,0.04);border:1px solid rgba(56,189,248,0.15);border-radius:10px;color:var(--text);font-size:14px;outline:none;margin-bottom:14px;font-family:'DM Sans',sans-serif;}
+.inp::placeholder{color:var(--muted2);}
+select.inp{cursor:pointer;}
+.btn-primary{width:100%;padding:14px;background:linear-gradient(135deg,#0ea5e9,#0284c7);border:none;border-radius:10px;color:#fff;font-size:15px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;}
+.err{color:#f87171;font-size:12px;margin-bottom:12px;display:none;line-height:1.5;}
+.login-footer{text-align:center;margin-top:22px;font-size:11px;color:var(--muted2);letter-spacing:1px;}
+/* APP */
+#app-screen{display:none;min-height:100vh;}
+#app-screen.active{display:block;}
+.navbar{background:rgba(10,15,26,0.95);border-bottom:1px solid var(--border);padding:0 24px;display:flex;align-items:center;justify-content:space-between;height:58px;position:sticky;top:0;z-index:100;backdrop-filter:blur(12px);}
+.nav-logo{font-family:'Playfair Display',serif;font-size:20px;color:var(--accent);}
+.nav-tabs{display:flex;gap:3px;}
+.nav-tab{padding:6px 13px;border-radius:8px;border:none;background:transparent;color:var(--muted);font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s;}
+.nav-tab.active{background:rgba(56,189,248,0.12);color:var(--accent);}
+.nav-right{display:flex;gap:8px;align-items:center;}
+.nav-user{font-size:12px;color:var(--accent);border:1px solid rgba(56,189,248,0.3);border-radius:20px;padding:4px 12px;}
+.signout-btn{font-size:12px;color:var(--muted2);background:none;border:1px solid rgba(148,163,184,0.15);border-radius:8px;padding:5px 12px;cursor:pointer;font-family:'DM Sans',sans-serif;}
+.content{max-width:920px;margin:0 auto;padding:30px 20px;}
+.tab-pane{display:none;}
+.tab-pane.active{display:block;}
+.pg-title{font-size:22px;margin-bottom:5px;}
+.pg-sub{font-size:13px;color:var(--muted);margin-bottom:26px;}
+/* STATS */
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:28px;}
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:18px 14px;text-align:center;}
+.stat-val{font-size:26px;color:var(--accent);font-weight:700;}
+.stat-lbl{font-size:11px;color:var(--muted2);margin-top:3px;}
+.actions-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:26px;}
+.action-card{background:var(--surface);border-radius:14px;padding:18px;cursor:pointer;transition:background .2s;}
+.action-card:hover{background:rgba(255,255,255,0.05);}
+/* SYLLABUS */
+.sec-card{margin-bottom:10px;background:var(--surface);border-radius:14px;overflow:hidden;}
+.sec-hdr{padding:15px 18px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;}
+.sec-body{display:none;padding:0 18px 16px;}
+.sec-body.open{display:block;}
+.topic-row{padding:10px 14px;border-radius:8px;margin-bottom:6px;border-left:3px solid;}
+.topic-name{font-size:14px;color:var(--text);margin-bottom:4px;}
+.topic-detail{font-size:12px;color:var(--muted);line-height:1.6;}
+/* PAPERS */
+.paper-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:16px 20px;margin-bottom:10px;}
+.paper-year{font-size:19px;color:var(--accent);font-weight:700;margin-bottom:4px;}
+.paper-meta{font-size:12px;color:var(--muted2);margin-bottom:10px;}
+.paper-btns{display:flex;gap:7px;flex-wrap:wrap;}
+.btn-dl{padding:7px 14px;border-radius:8px;font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif;text-decoration:none;display:inline-block;font-weight:500;border:none;}
+.btn-blue{background:rgba(56,189,248,0.1);border:1px solid rgba(56,189,248,0.3)!important;color:var(--accent);}
+.btn-green{background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.3)!important;color:var(--green);}
+/* TEST */
+.cfg-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:22px;margin-bottom:22px;}
+.qtopics{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:14px;}
+.qtopic{padding:6px 13px;border-radius:20px;border:1px solid rgba(56,189,248,0.15);background:transparent;color:var(--muted);font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s;}
+.qtopic.sel{border-color:var(--accent);background:rgba(56,189,248,0.12);color:var(--accent);}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.q-card{background:var(--surface);border:1px solid rgba(255,255,255,0.05);border-radius:13px;padding:20px;margin-bottom:12px;}
+.q-num{font-size:11px;color:rgba(56,189,248,0.5);letter-spacing:2px;margin-bottom:7px;}
+.q-text{font-size:14px;line-height:1.7;margin-bottom:14px;}
+.opt{display:block;width:100%;text-align:left;padding:10px 14px;border-radius:8px;border:1px solid rgba(255,255,255,0.06);background:transparent;color:var(--text);font-size:13px;cursor:pointer;margin-bottom:7px;font-family:'DM Sans',sans-serif;transition:all .2s;}
+.opt:hover:not([disabled]){border-color:var(--accent);background:rgba(56,189,248,0.06);}
+.opt.sel{border-color:var(--accent)!important;background:rgba(56,189,248,0.08)!important;}
+.opt.correct{border-color:var(--green)!important;background:rgba(16,185,129,0.08)!important;}
+.opt.wrong{border-color:#ef4444!important;background:rgba(239,68,68,0.08)!important;}
+.expl{margin-top:8px;padding:9px 13px;background:rgba(56,189,248,0.05);border-radius:8px;font-size:12px;color:var(--muted);line-height:1.6;}
+.score-box{text-align:center;padding:22px;background:rgba(56,189,248,0.06);border:1px solid rgba(56,189,248,0.15);border-radius:14px;margin-bottom:22px;display:none;}
+.submit-btn{width:100%;padding:13px;border:none;border-radius:10px;color:#fff;font-size:14px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;margin-top:6px;}
+/* MATERIALS */
+.mat-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px;}
+.mat-card{background:var(--surface);border-radius:13px;padding:16px;cursor:pointer;border:1px solid rgba(255,255,255,0.05);transition:all .2s;}
+.mat-detail{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:22px;display:none;}
+.mat-detail.open{display:block;}
+.book-item{padding:9px 13px;background:rgba(255,255,255,0.03);border-radius:8px;margin-bottom:7px;font-size:13px;border-left:3px solid var(--accent2);}
+.book-item a{color:var(--accent);text-decoration:none;font-size:11px;margin-left:8px;}
+.book-item a:hover{text-decoration:underline;}
+.topic-tags{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:18px;}
+.t-tag{padding:5px 12px;background:rgba(56,189,248,0.08);border:1px solid rgba(56,189,248,0.15);border-radius:20px;font-size:12px;color:var(--muted);}
+.pro-tip{padding:13px 16px;background:rgba(245,158,11,0.06);border:1px solid rgba(245,158,11,0.2);border-radius:10px;font-size:13px;color:rgba(245,158,11,0.85);line-height:1.6;}
+/* USERS */
+.user-table{width:100%;border-collapse:collapse;font-size:13px;}
+.user-table th{padding:10px 14px;text-align:left;font-size:11px;letter-spacing:1px;color:var(--muted2);text-transform:uppercase;border-bottom:1px solid var(--border);}
+.user-table td{padding:10px 14px;border-bottom:1px solid rgba(255,255,255,0.04);color:var(--text);}
+.user-table tr:hover td{background:rgba(255,255,255,0.02);}
+.tip-box{margin-top:18px;padding:14px;background:rgba(245,158,11,0.05);border:1px solid rgba(245,158,11,0.15);border-radius:12px;font-size:12px;color:rgba(245,158,11,0.7);}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login-screen" class="active">
+  <div class="login-bg"></div>
+  <div class="login-card">
+    <div class="logo">GateCivil</div>
+    <div class="logo-sub">GATE Civil Engineering Prep</div>
+    <div class="toggle-row">
+      <button class="toggle-btn active" id="btn-login" onclick="switchMode('login')">Sign In</button>
+      <button class="toggle-btn" id="btn-register" onclick="switchMode('register')">Register Free</button>
+    </div>
+    <div id="reg-name-row" style="display:none;">
+      <label class="lbl">Full Name</label>
+      <input class="inp" id="reg-name" placeholder="Your full name"/>
+    </div>
+    <label class="lbl">Email Address</label>
+    <input class="inp" id="l-email" placeholder="your@email.com" onkeydown="if(event.key==='Enter')doAuth()"/>
+    <label class="lbl">Password</label>
+    <input class="inp" id="l-pass" type="password" placeholder="••••••••" onkeydown="if(event.key==='Enter')doAuth()"/>
+    <div class="err" id="l-err"></div>
+    <button class="btn-primary" id="auth-btn" onclick="doAuth()">Sign In →</button>
+    <div class="login-footer">FREE · NO ADS · AI-POWERED · GATE CIVIL 2026</div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app-screen">
+  <nav class="navbar">
+    <div class="nav-logo">GateCivil</div>
+    <div class="nav-tabs">
+      <button class="nav-tab active" onclick="goTab('dashboard',this)">⬡ Home</button>
+      <button class="nav-tab" onclick="goTab('syllabus',this)">📋 Syllabus</button>
+      <button class="nav-tab" onclick="goTab('papers',this)">📄 Papers</button>
+      <button class="nav-tab" onclick="goTab('test',this)">🧠 AI Test</button>
+      <button class="nav-tab" onclick="goTab('materials',this)">📚 Materials</button>
+      <button class="nav-tab" id="admin-tab" onclick="goTab('users',this)" style="display:none;">👥 Users</button>
+    </div>
+    <div class="nav-right">
+      <span class="nav-user" id="nav-user">Student</span>
+      <button class="signout-btn" onclick="doLogout()">Sign out</button>
+    </div>
+  </nav>
+  <div class="content">
+
+    <!-- DASHBOARD -->
+    <div id="tab-dashboard" class="tab-pane active">
+      <div style="margin-bottom:28px;">
+        <div style="font-size:25px;margin-bottom:5px;">Welcome, <span style="color:var(--accent)" id="user-name">Student</span> 👋</div>
+        <div style="font-size:13px;color:var(--muted);">Your GATE 2026 Civil Engineering preparation hub</div>
+      </div>
+      <div class="stats-grid">
+        <div class="stat-card"><div style="font-size:22px;margin-bottom:7px;">📋</div><div class="stat-val">7</div><div class="stat-lbl">Sections</div></div>
+        <div class="stat-card"><div style="font-size:22px;margin-bottom:7px;">📄</div><div class="stat-val">11</div><div class="stat-lbl">Years of Papers</div></div>
+        <div class="stat-card"><div style="font-size:22px;margin-bottom:7px;">🧠</div><div class="stat-val">∞</div><div class="stat-lbl">AI Tests</div></div>
+        <div class="stat-card"><div style="font-size:22px;margin-bottom:7px;">📚</div><div class="stat-val">9</div><div class="stat-lbl">Subject Materials</div></div>
+      </div>
+      <div class="actions-grid">
+        <div class="action-card" style="border:1px solid rgba(14,165,233,0.15);" onclick="goTabName('test')"><div style="font-size:24px;margin-bottom:9px;">🧠</div><div style="font-size:15px;margin-bottom:5px;">Start AI Practice Test</div><div style="font-size:12px;color:var(--muted);line-height:1.5;">Exam-pattern questions on any topic, generated instantly by AI</div></div>
+        <div class="action-card" style="border:1px solid rgba(16,185,129,0.15);" onclick="goTabName('papers')"><div style="font-size:24px;margin-bottom:9px;">📄</div><div style="font-size:15px;margin-bottom:5px;">Previous Year Papers</div><div style="font-size:12px;color:var(--muted);line-height:1.5;">2015–2025 GATE Civil papers + official answer keys</div></div>
+        <div class="action-card" style="border:1px solid rgba(245,158,11,0.15);" onclick="goTabName('syllabus')"><div style="font-size:24px;margin-bottom:9px;">📋</div><div style="font-size:15px;margin-bottom:5px;">Detailed Syllabus</div><div style="font-size:12px;color:var(--muted);line-height:1.5;">Section-wise topics with full GATE 2026 details</div></div>
+        <div class="action-card" style="border:1px solid rgba(139,92,246,0.15);" onclick="goTabName('materials')"><div style="font-size:24px;margin-bottom:9px;">📚</div><div style="font-size:15px;margin-bottom:5px;">Study Materials</div><div style="font-size:12px;color:var(--muted);line-height:1.5;">Books, free PDF notes & eBook links for every subject</div></div>
+      </div>
+      <div style="background:rgba(56,189,248,0.04);border:1px solid var(--border);border-radius:14px;padding:18px;">
+        <div style="font-size:12px;color:var(--accent);letter-spacing:1px;margin-bottom:10px;">📌 GATE 2026 Civil — Quick Facts</div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;">
+          <div style="font-size:12px;"><span style="color:var(--muted2);">Organizer: </span>IIT Guwahati</div>
+          <div style="font-size:12px;"><span style="color:var(--muted2);">Duration: </span>3 Hours</div>
+          <div style="font-size:12px;"><span style="color:var(--muted2);">Total Marks: </span>100</div>
+          <div style="font-size:12px;"><span style="color:var(--muted2);">Questions: </span>65</div>
+          <div style="font-size:12px;"><span style="color:var(--muted2);">Negative Marking: </span>1/3 MCQ</div>
+          <div style="font-size:12px;"><span style="color:var(--muted2);">Mode: </span>Online CBT</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SYLLABUS -->
+    <div id="tab-syllabus" class="tab-pane">
+      <div class="pg-title">📋 GATE 2026 Civil Syllabus</div>
+      <div class="pg-sub">Click any section → expand topics with full details</div>
+      <div id="syl-container"></div>
+    </div>
+
+    <!-- PAPERS -->
+    <div id="tab-papers" class="tab-pane">
+      <div class="pg-title">📄 Previous Year Papers</div>
+      <div class="pg-sub">2015–2025 official GATE Civil papers with answer keys — direct PDF download</div>
+      <div id="papers-container"></div>
+      <div class="tip-box">💡 Solve each paper in 3 hours under exam conditions. <strong>2025 paper added!</strong> Source: gateexam.info (official PDFs)</div>
+    </div>
+
+    <!-- AI TEST -->
+    <div id="tab-test" class="tab-pane">
+      <div class="pg-title">🧠 AI Practice Test</div>
+      <div class="pg-sub">GATE-pattern questions generated by AI — topic, difficulty, number all customizable</div>
+      <div class="cfg-card">
+        <div style="font-size:11px;letter-spacing:2px;color:var(--muted2);text-transform:uppercase;margin-bottom:14px;">Test Configuration</div>
+        <label class="lbl">Quick Topics</label>
+        <div class="qtopics" id="quick-topics"></div>
+        <label class="lbl">Or Type Any Specific Topic</label>
+        <input class="inp" id="topic-inp" placeholder="e.g. Mohr's Circle, Bernoulli's Theorem, Slope Deflection Method..."/>
+        <div class="two-col">
+          <div><label class="lbl">Number of Questions</label>
+            <select class="inp" id="num-q"><option value="3">3 Questions</option><option value="5" selected>5 Questions</option><option value="10">10 Questions</option><option value="15">15 Questions</option></select>
+          </div>
+          <div><label class="lbl">Difficulty Level</label>
+            <select class="inp" id="difficulty"><option>Easy (Basics)</option><option selected>GATE Level</option><option>Advanced (Tough Numericals)</option></select>
+          </div>
+        </div>
+        <div class="err" id="test-err"></div>
+        <button class="submit-btn" id="gen-btn" style="background:linear-gradient(135deg,#0ea5e9,#0284c7);" onclick="generateTest()">Generate Test ⚡</button>
+      </div>
+      <div id="quiz-area"></div>
+    </div>
+
+    <!-- MATERIALS -->
+    <div id="tab-materials" class="tab-pane">
+      <div class="pg-title">📚 Study Materials</div>
+      <div class="pg-sub">Books, free PDF notes & eBook links — curated for GATE Civil 2026</div>
+      <div class="mat-grid" id="mat-grid"></div>
+      <div class="mat-detail" id="mat-detail"></div>
+    </div>
+
+    <!-- USERS ADMIN -->
+    <div id="tab-users" class="tab-pane">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+        <div><div class="pg-title">👥 Registered Users</div><div class="pg-sub" style="margin-bottom:0;">All students who registered on GateCivil</div></div>
+        <button onclick="exportExcel()" style="padding:10px 20px;background:linear-gradient(135deg,#10b981,#059669);border:none;border-radius:10px;color:#fff;font-size:13px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;">📥 Download Excel</button>
+      </div>
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:14px;overflow:hidden;">
+        <table class="user-table">
+          <thead><tr><th>#</th><th>Name</th><th>Email</th><th>Registered On</th></tr></thead>
+          <tbody id="user-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+// ── FULL SYLLABUS DATA ──────────────────────────────────────────────────
+const SYLLABUS=[
+  {name:"Engineering Mathematics",color:"#0ea5e9",topics:[
+    {n:"Linear Algebra",d:"Matrix algebra; Systems of linear equations; Eigenvalues and eigenvectors."},
+    {n:"Calculus",d:"Functions of single variable; Limit, continuity & differentiability; Mean value theorems; Taylor series; Definite & indefinite integrals; Partial derivatives; Gradient, Divergence & Curl; Line, Surface & Volume integrals."},
+    {n:"Ordinary Differential Equations",d:"First order (linear & non-linear); Higher order linear equations with constant coefficients; Euler-Cauchy equations; Initial & boundary value problems."},
+    {n:"Partial Differential Equations",d:"Fourier series; Separation of variables; 1D diffusion equation; 1D & 2D wave & Laplace equations."},
+    {n:"Probability & Statistics",d:"Sampling theorems; Conditional probability; Mean, median, mode, std dev; Discrete & Continuous random variables; Poisson & Normal distribution; Linear regression."},
+    {n:"Numerical Methods",d:"Error analysis; Numerical solutions of algebraic equations; Newton's & Lagrange polynomials; Numerical differentiation; Trapezoidal & Simpson's rule; Single & multi-step ODE methods."},
+  ]},
+  {name:"Structural Engineering",color:"#10b981",topics:[
+    {n:"Engineering Mechanics",d:"System of forces, free-body diagrams, equilibrium equations; Internal forces; Friction; Centre of mass; Free vibrations of undamped SDOF system."},
+    {n:"Solid Mechanics",d:"Bending moment & shear force in determinate beams; Simple stress-strain; Flexural & shear stresses, shear centre; Uniform torsion; Stress transformation; Buckling of columns; Combined stresses."},
+    {n:"Structural Analysis",d:"Statically determinate & indeterminate structures; Force/energy methods; Method of superposition; Trusses, arches, beams, cables, frames; Slope deflection & moment distribution; Influence lines; Stiffness & flexibility methods."},
+    {n:"Construction Materials & Management",d:"Structural Steel — composition, properties, behaviour. Concrete — constituents, mix design, short & long-term properties. Project planning — PERT & CPM; Cost estimation."},
+    {n:"Concrete Structures",d:"Working stress & Limit state design; Design of beams, slabs, columns; Bond & development length; Prestressed concrete beams."},
+    {n:"Steel Structures",d:"Working stress & Limit state design; Tension/compression members, beams, beam-columns; Column bases; Connections — simple & eccentric; Plate girders; Plastic analysis of beams & frames."},
+  ]},
+  {name:"Geotechnical Engineering",color:"#f59e0b",topics:[
+    {n:"Soil Mechanics",d:"Three-phase system & phase relationships; Index properties; Unified & IS soil classification; Permeability — 1D & 2D flow, flow nets, piping, capillarity; Effective stress & quicksand; Compaction; Consolidation & time rate; Shear strength — Mohr's circle, Stress-Strain of clays & sands; Stress paths."},
+    {n:"Foundation Engineering",d:"Sub-surface investigations — boring, SPT, CPT; Earth pressure — Rankine & Coulomb; Slope stability — Bishop's method; Stress distribution — Boussinesq's theory; Shallow foundations — Terzaghi's & Meyerhoff's theories; Settlement analysis; Deep foundations — pile capacity, pile load test, pile group efficiency, negative skin friction."},
+  ]},
+  {name:"Water Resources Engineering",color:"#8b5cf6",topics:[
+    {n:"Fluid Mechanics",d:"Fluid properties & statics; Continuity, momentum & energy equations; Potential flow; Laminar & turbulent flow; Pipe flow & networks; Boundary layer concept; Lift & drag."},
+    {n:"Hydraulics",d:"Forces on immersed bodies; Flow measurement; Dimensional analysis; Channel hydraulics — energy-depth, specific energy, critical flow, hydraulic jump, gradually varied flow."},
+    {n:"Hydrology",d:"Hydrologic cycle; Precipitation, evaporation, evapo-transpiration; Watershed; Infiltration; Unit hydrographs; Flood estimation & routing; Groundwater — Darcy's Law, steady state well hydraulics."},
+    {n:"Irrigation",d:"Types of irrigation systems; Crop water requirements — duty, delta; Gravity dams & spillways; Canal design; Weirs on permeable foundation; Cross drainage structures."},
+  ]},
+  {name:"Environmental Engineering",color:"#ef4444",topics:[
+    {n:"Water & Waste Water",d:"Water quality standards — physical, chemical, biological parameters; Water quality index; Unit processes; Water distribution system; Drinking water treatment. Sewerage design; Domestic wastewater; Primary & secondary treatment; Effluent standards; Sludge disposal."},
+    {n:"Air Pollution",d:"Types of pollutants, sources & impacts; Air pollution control methods; Air quality standards & index; AQI limits."},
+    {n:"Municipal Solid Wastes",d:"Characteristics, generation, collection & transportation; Engineered systems — reuse/recycle, energy recovery, treatment & disposal."},
+  ]},
+  {name:"Transportation Engineering",color:"#06b6d4",topics:[
+    {n:"Transportation Infrastructure",d:"Geometric design of highways — cross-sectional elements, sight distances, horizontal & vertical alignments. Railway track — speed & cant. Airport runway length calculations, taxiway design."},
+    {n:"Highway Pavements",d:"Highway materials — desirable properties & tests; Bituminous paving mixes; Design factors for flexible & rigid pavements; IRC code-based pavement design."},
+    {n:"Traffic Engineering",d:"Traffic studies on flow & speed; Peak hour factor; Accident study; Microscopic & macroscopic traffic flow parameters; Fundamental relationships; Signal design — Webster's method; Highway capacity."},
+  ]},
+  {name:"Geomatics Engineering",color:"#f97316",topics:[
+    {n:"Surveying",d:"Principles of surveying; Errors & adjustment; Maps — scale, coordinate system; Distance & angle measurement; Levelling & trigonometric levelling; Traversing & triangulation; Total station; Horizontal & vertical curves."},
+    {n:"Photogrammetry & Remote Sensing",d:"Scale & flying height; Basics of remote sensing; GIS fundamentals."},
+  ]},
+];
+
+// ── PAPERS ──────────────────────────────────────────────────────────────
+const PAPERS=[
+  {year:2025,s1q:"https://www.gateexam.info/docs/papers/CE/CE-2025-1.pdf",s1a:"https://www.gateexam.info/docs/papers/CE/CE-2025-1-Ans.pdf",s2q:"https://www.gateexam.info/docs/papers/CE/CE-2025-2.pdf",s2a:"https://www.gateexam.info/docs/papers/CE/CE-2025-2-Ans.pdf"},
+  {year:2024,s1q:"https://www.gateexam.info/docs/papers/CE/CE-2024-1.pdf",s1a:"https://www.gateexam.info/docs/papers/CE/CE-2024-1-Ans.pdf",s2q:"https://www.gateexam.info/docs/papers/CE/CE-2024-2.pdf",s2a:"https://www.gateexam.info/docs/papers/CE/CE-2024-2-Ans.pdf"},
+  {year:2023,s1q:"https://www.gateexam.info/docs/papers/CE/CE-2023-1.pdf",s1a:"https://www.gateexam.info/docs/papers/CE/CE-2023-1-Ans.pdf",s2q:"https://www.gateexam.info/docs/papers/CE/CE-2023-2.pdf",s2a:"https://www.gateexam.info/docs/papers/CE/CE-2023-2-Ans.pdf"},
+  {year:2022,s1q:"https://www.gateexam.info/docs/papers/CE/CE-2022.pdf",s1a:"https://www.gateexam.info/docs/papers/CE/CE-2022-Ans.pdf"},
+  {year:2021,s1q:"https://www.gateexam.info/docs/papers/CE/CE-2021.pdf",s1a:"https://www.gateexam.info/docs/papers/CE/CE-2021-Ans.pdf"},
+  {year:2020,s1q:"https://www.gateexam.info/docs/papers/CE/CE-2020-1.pdf",s1a:"https://www.gateexam.info/docs/papers/CE/CE-2020-1-Ans.pdf",s2q:"https://www.gateexam.info/docs/papers/CE/CE-2020-2.pdf"},
+  {year:2019,s1q:"https://www.gateexam.info/docs/papers/CE/CE-2019-1.pdf",s1a:"https://www.gateexam.info/docs/papers/CE/CE-2019-1-Ans.pdf",s2q:"https://www.gateexam.info/docs/papers/CE/CE-2019-2.pdf",s2a:"https://www.gateexam.info/docs/papers/CE/CE-2019-2-Ans.pdf"},
+  {year:2018,s1q:"https://www.gateexam.info/docs/papers/CE/CE-2018-1.pdf",s1a:"https://www.gateexam.info/docs/papers/CE/CE-2018-1-Ans.pdf",s2q:"https://www.gateexam.info/docs/papers/CE/CE-2018-2.pdf"},
+  {year:2017,s1q:"https://www.gateexam.info/docs/papers/CE/CE-2017-1.pdf",s1a:"https://www.gateexam.info/docs/papers/CE/CE-2017-1-Ans.pdf",s2q:"https://www.gateexam.info/docs/papers/CE/CE-2017-2.pdf",s2a:"https://www.gateexam.info/docs/papers/CE/CE-2017-2-Ans.pdf"},
+  {year:2016,s1q:"https://www.gateexam.info/docs/papers/CE/CE-2016-1.pdf",s2q:"https://www.gateexam.info/docs/papers/CE/CE-2016-2.pdf"},
+  {year:2015,s1q:"https://www.gateexam.info/docs/papers/CE/CE-2015-1.pdf",s2q:"https://www.gateexam.info/docs/papers/CE/CE-2015-2.pdf"},
+];
+
+// ── MATERIALS ────────────────────────────────────────────────────────────
+const MATERIALS=[
+  {name:"Engineering Mathematics",color:"#0ea5e9",
+   books:[
+     {t:"Higher Engineering Mathematics — B.S. Grewal",pdf:"https://www.pdfdrive.com/higher-engineering-mathematics-e19564985.html"},
+     {t:"Advanced Engineering Mathematics — Erwin Kreyszig",pdf:"https://www.pdfdrive.com/advanced-engineering-mathematics-e184940870.html"},
+   ],
+   notes:"https://www.gatexplore.com/study-material/civil/",
+   topics:["Linear Algebra","Calculus","ODE & PDE","Probability & Statistics","Numerical Methods"],
+   tip:"Engineering Maths carries ~13 marks. Master eigenvalues, integration, and probability — these repeat every year."},
+  {name:"General Aptitude",color:"#84cc16",
+   books:[
+     {t:"A Modern Approach to Verbal Reasoning — R.S. Aggarwal",pdf:"https://www.pdfdrive.com/a-modern-approach-to-verbal-and-non-verbal-reasoning-e195785939.html"},
+     {t:"Quantitative Aptitude — R.S. Aggarwal",pdf:"https://www.pdfdrive.com/quantitative-aptitude-for-competitive-examinations-e184764290.html"},
+   ],
+   notes:"https://gatenotes.in/gate-civil-notes.php",
+   topics:["Verbal Ability","Critical Reasoning","Sentence Completion","Numerical Ability","Data Interpretation","Ratio & Proportion"],
+   tip:"GA carries 15 marks — easiest to score! Practice vocabulary, reading comprehension & basic numerics daily."},
+  {name:"Soil Mechanics",color:"#f59e0b",
+   books:[
+     {t:"Soil Mechanics & Foundations — B.C. Punmia",pdf:"https://civilenggforall.com/made-easy-civil-engineering-gate-notes-pdf-free-download/"},
+     {t:"Geotechnical Engineering — C. Venkatramaiah",pdf:"https://www.pdfdrive.com/geotechnical-engineering-e184937621.html"},
+   ],
+   notes:"https://www.gatexplore.com/study-material/civil/",
+   topics:["Phase relationships","Permeability & Seepage","Consolidation","Shear Strength","Earth Pressure","Bearing Capacity","Pile Foundations"],
+   tip:"Mohr's Circle, Terzaghi's bearing capacity, Rankine/Coulomb earth pressure — top 3 high-weightage topics."},
+  {name:"Fluid Mechanics",color:"#8b5cf6",
+   books:[
+     {t:"Fluid Mechanics — R.K. Bansal",pdf:"https://www.pdfdrive.com/fluid-mechanics-and-hydraulic-machines-e184820199.html"},
+     {t:"Fluid Mechanics & Hydraulic Machines — Modi & Seth",pdf:"https://civilenggforall.com/made-easy-civil-engineering-gate-notes-pdf-free-download/"},
+   ],
+   notes:"https://gatenotes.in/gate-civil-notes.php",
+   topics:["Fluid Properties","Bernoulli's Theorem","Pipe Flow","Open Channel Flow","Hydraulic Jump","Boundary Layer"],
+   tip:"Continuity + Bernoulli + Momentum equation — master these 3 and you can solve 80% of FM questions."},
+  {name:"Structural Analysis",color:"#10b981",
+   books:[
+     {t:"Structural Analysis — R.C. Hibbeler",pdf:"https://www.pdfdrive.com/structural-analysis-e184823348.html"},
+     {t:"Theory of Structures — Ramamrutham",pdf:"https://civilenggforall.com/made-easy-civil-engineering-gate-notes-pdf-free-download/"},
+   ],
+   notes:"https://www.gatexplore.com/study-material/civil/",
+   topics:["Truss Analysis","Arches & Cables","Slope Deflection","Moment Distribution","Influence Lines","Matrix Methods"],
+   tip:"Slope-deflection & moment distribution are high-priority. ILD (Influence Line Diagrams) appear every year."},
+  {name:"Concrete Structures",color:"#ef4444",
+   books:[
+     {t:"Design of RCC Structures — B.C. Punmia",pdf:"https://civilenggforall.com/made-easy-civil-engineering-gate-notes-pdf-free-download/"},
+     {t:"Limit State Design of RC Structures — P.C. Varghese",pdf:"https://www.pdfdrive.com/limit-state-design-of-reinforced-concrete-e19565053.html"},
+   ],
+   notes:"https://gatenotes.in/gate-civil-notes.php",
+   topics:["Working Stress Method","Limit State Method","Beam Design","Slab Design","Column Design","Prestressed Concrete"],
+   tip:"IS 456:2000 codal provisions are very heavily tested. Study the code alongside design problems."},
+  {name:"Transportation Engg",color:"#06b6d4",
+   books:[
+     {t:"Highway Engineering — Khanna & Justo",pdf:"https://civilenggforall.com/made-easy-civil-engineering-gate-notes-pdf-free-download/"},
+     {t:"Traffic Engineering & Transport Planning — Kadiyali",pdf:"https://www.pdfdrive.com/traffic-engineering-and-transport-planning-e30699756.html"},
+   ],
+   notes:"https://www.gatexplore.com/study-material/civil/",
+   topics:["Geometric Design","Pavement Design (CBR)","Traffic Flow Theory","Webster's Signal Design","IRC Codes","Airport Runway"],
+   tip:"CBR method, IRC codes, PCU values, Webster's method — most frequently asked numericals."},
+  {name:"Environmental Engg",color:"#f97316",
+   books:[
+     {t:"Environmental Engineering — Peavy & Rowe (McGraw Hill)",pdf:"https://www.pdfdrive.com/environmental-engineering-e184897108.html"},
+     {t:"Waste Water Engineering — B.C. Punmia",pdf:"https://civilenggforall.com/made-easy-civil-engineering-gate-notes-pdf-free-download/"},
+   ],
+   notes:"https://gatenotes.in/gate-civil-notes.php",
+   topics:["Water Treatment","Sewage Treatment","BOD & COD","Air Pollution","Solid Waste Management","AQI"],
+   tip:"BOD, COD, population forecasting for sewage design — these are the most commonly tested numericals."},
+  {name:"Surveying",color:"#84cc16",
+   books:[
+     {t:"Surveying Vol 1, 2, 3 — B.C. Punmia",pdf:"https://civilenggforall.com/made-easy-civil-engineering-gate-notes-pdf-free-download/"},
+   ],
+   notes:"https://www.gatexplore.com/study-material/civil/",
+   topics:["Chain & Compass Surveying","Levelling & Errors","Trigonometric Levelling","Contouring","Total Station","Curves","Remote Sensing & GIS"],
+   tip:"Errors in levelling, curve setting calculations, and remote sensing basics appear regularly in GATE."},
+];
+
+const QUICK_TOPICS=["Soil Mechanics","Fluid Mechanics","Structural Analysis","RCC Design","Surveying","Transportation","Environmental Engg","Engineering Maths","General Aptitude","Geotechnical Engg"];
+const COLORS=["#0ea5e9","#10b981","#f59e0b","#8b5cf6","#ef4444","#06b6d4","#f97316","#84cc16","#38bdf8","#a78bfa"];
+
+// ── STATE ────────────────────────────────────────────────────────────────
+let currentUser=null,selectedTopic="",questions=[],userAnswers={},quizSubmitted=false,loginMode="login";
+
+// ── AUTH ─────────────────────────────────────────────────────────────────
+function getUsers(){try{return JSON.parse(localStorage.getItem('gc_users')||'[]');}catch{return[];}}
+function saveUsers(u){localStorage.setItem('gc_users',JSON.stringify(u));}
+
+function switchMode(m){
+  loginMode=m;
+  document.getElementById('btn-login').classList.toggle('active',m==='login');
+  document.getElementById('btn-register').classList.toggle('active',m==='register');
+  document.getElementById('auth-btn').textContent=m==='login'?'Sign In →':'Create Free Account →';
+  document.getElementById('reg-name-row').style.display=m==='register'?'block':'none';
+  document.getElementById('l-err').style.display='none';
+}
+
+function doAuth(){
+  const email=document.getElementById('l-email').value.trim();
+  const pass=document.getElementById('l-pass').value;
+  const err=document.getElementById('l-err');
+  err.style.display='none';
+  if(!email||!pass){err.textContent="Please fill in all fields.";err.style.display='block';return;}
+  if(loginMode==='login'){
+    // Demo account
+    if(email==='admin@gatecivil.in'&&pass==='admin123'){
+      currentUser={name:'Admin',email,role:'admin'};enterApp();return;
+    }
+    const users=getUsers();
+    const found=users.find(u=>u.email===email&&u.pass===pass);
+    if(found){currentUser=found;enterApp();}
+    else{err.textContent="Account not found. Please register first, or check credentials.";err.style.display='block';}
+  }else{
+    const name=document.getElementById('reg-name').value.trim();
+    if(!name){err.textContent="Please enter your full name.";err.style.display='block';return;}
+    const users=getUsers();
+    if(users.find(u=>u.email===email)){err.textContent="Email already registered. Please sign in.";err.style.display='block';return;}
+    const newUser={name,email,pass,role:'student',registeredOn:new Date().toLocaleString('en-IN')};
+    users.push(newUser);saveUsers(users);
+    currentUser=newUser;enterApp();
+  }
+}
+
+function enterApp(){
+  document.getElementById('login-screen').classList.remove('active');
+  document.getElementById('app-screen').classList.add('active');
+  document.getElementById('user-name').textContent=currentUser.name;
+  document.getElementById('nav-user').textContent=currentUser.name;
+  if(currentUser.role==='admin')document.getElementById('admin-tab').style.display='';
+  else document.getElementById('admin-tab').style.display='none';
+  initSyllabus();initPapers();initQuickTopics();initMaterials();
+  if(currentUser.role==='admin')initUsers();
+}
+
+function doLogout(){
+  currentUser=null;questions=[];userAnswers={};quizSubmitted=false;
+  document.getElementById('app-screen').classList.remove('active');
+  document.getElementById('login-screen').classList.add('active');
+  document.getElementById('l-email').value='';document.getElementById('l-pass').value='';
+  document.getElementById('l-err').style.display='none';
+  document.getElementById('quiz-area').innerHTML='';
+  document.getElementById('reg-name').value='';
+  switchMode('login');
+  goTab('dashboard',document.querySelector('.nav-tab'));
+}
+
+// ── TABS ──────────────────────────────────────────────────────────────────
+function goTab(name,btn){
+  document.querySelectorAll('.tab-pane').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tab-'+name).classList.add('active');
+  if(btn)btn.classList.add('active');
+}
+function goTabName(name){
+  document.querySelectorAll('.tab-pane').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tab-'+name).classList.add('active');
+  document.querySelectorAll('.nav-tab').forEach(b=>{if(b.getAttribute('onclick')&&b.getAttribute('onclick').includes("'"+name+"'"))b.classList.add('active');});
+}
+
+// ── SYLLABUS ──────────────────────────────────────────────────────────────
+function initSyllabus(){
+  const c=document.getElementById('syl-container');c.innerHTML='';
+  SYLLABUS.forEach((sec,i)=>{
+    const d=document.createElement('div');d.className='sec-card';
+    d.style.border=`1px solid ${sec.color}22`;
+    d.innerHTML=`<div class="sec-hdr" onclick="toggleSec(this)">
+      <div><span style="color:${sec.color};margin-right:10px;font-size:16px;">●</span>
+        <span style="font-size:15px;font-weight:500;">Section ${i+1}: ${sec.name}</span>
+        <span style="font-size:11px;color:var(--muted2);margin-left:10px;">${sec.topics.length} topics</span>
+      </div><span style="color:var(--muted2);">▼</span></div>
+      <div class="sec-body">
+        ${sec.topics.map(t=>`
+          <div class="topic-row" style="background:${sec.color}08;border-left-color:${sec.color};">
+            <div class="topic-name">${t.n}</div>
+            <div class="topic-detail">${t.d}</div>
+          </div>`).join('')}
+      </div>`;
+    c.appendChild(d);
+  });
+}
+function toggleSec(h){const b=h.nextElementSibling,o=b.classList.toggle('open');h.querySelector('span:last-child').textContent=o?'▲':'▼';}
+
+// ── PAPERS ────────────────────────────────────────────────────────────────
+function initPapers(){
+  const c=document.getElementById('papers-container');c.innerHTML='';
+  PAPERS.forEach(p=>{
+    let btns='';
+    if(p.s2q){
+      btns+=`<a href="${p.s1q}" target="_blank" class="btn-dl btn-blue">📄 Session 1</a>`;
+      if(p.s1a)btns+=`<a href="${p.s1a}" target="_blank" class="btn-dl btn-green">✅ Key S1</a>`;
+      btns+=`<a href="${p.s2q}" target="_blank" class="btn-dl btn-blue">📄 Session 2</a>`;
+      if(p.s2a)btns+=`<a href="${p.s2a}" target="_blank" class="btn-dl btn-green">✅ Key S2</a>`;
+    }else{
+      btns+=`<a href="${p.s1q}" target="_blank" class="btn-dl btn-blue">📄 Question Paper</a>`;
+      if(p.s1a)btns+=`<a href="${p.s1a}" target="_blank" class="btn-dl btn-green">✅ Answer Key</a>`;
+    }
+    const badge=p.year===2025?'<span style="margin-left:10px;font-size:10px;background:rgba(16,185,129,0.15);border:1px solid rgba(16,185,129,0.3);color:#10b981;border-radius:20px;padding:2px 8px;">NEW</span>':'';
+    c.innerHTML+=`<div class="paper-card">
+      <div class="paper-year">GATE ${p.year}${badge}</div>
+      <div class="paper-meta">65 Questions · 100 Marks · Civil Engineering (CE)</div>
+      <div class="paper-btns">${btns}</div></div>`;
+  });
+}
+
+// ── QUICK TOPICS ──────────────────────────────────────────────────────────
+function initQuickTopics(){
+  const c=document.getElementById('quick-topics');c.innerHTML='';
+  QUICK_TOPICS.forEach(t=>{
+    const b=document.createElement('button');b.className='qtopic';b.textContent=t;
+    b.onclick=()=>{selectedTopic=t;document.getElementById('topic-inp').value=t;document.querySelectorAll('.qtopic').forEach(x=>x.classList.remove('sel'));b.classList.add('sel');};
+    c.appendChild(b);
+  });
+  document.getElementById('topic-inp').addEventListener('input',function(){selectedTopic=this.value;document.querySelectorAll('.qtopic').forEach(x=>x.classList.remove('sel'));});
+}
+
+// ── AI TEST ───────────────────────────────────────────────────────────────
+async function generateTest(){
+  const topic=(document.getElementById('topic-inp').value.trim()||selectedTopic).trim();
+  const numQ=document.getElementById('num-q').value;
+  const diff=document.getElementById('difficulty').value;
+  const errEl=document.getElementById('test-err');
+  const btn=document.getElementById('gen-btn');
+  errEl.style.display='none';
+  if(!topic){errEl.textContent="Please select or type a topic first.";errEl.style.display='block';return;}
+  btn.disabled=true;btn.textContent='⏳ AI is generating questions...';
+  btn.style.background='rgba(56,189,248,0.08)';btn.style.color='rgba(56,189,248,0.4)';
+  document.getElementById('quiz-area').innerHTML='<div style="text-align:center;padding:40px;color:var(--muted);font-size:14px;">🧠 Generating GATE-level questions on <strong style="color:var(--accent)">'+topic+'</strong>...</div>';
+  questions=[];userAnswers={};quizSubmitted=false;
+
+  const prompt=`You are a GATE Civil Engineering expert examiner. Create exactly ${numQ} MCQ questions on the topic: "${topic}" at difficulty: ${diff}. Follow actual GATE exam style with proper numericals where relevant.
+
+IMPORTANT: Respond ONLY with valid JSON. No markdown code blocks, no explanation text, just raw JSON.
+
+Format:
+{"title":"${topic} — GATE Practice","questions":[{"id":1,"question":"Full question text here","options":["A. option1","B. option2","C. option3","D. option4"],"answer":"A","explanation":"Brief explanation of correct answer"}]}`;
+
+  try{
+    const res=await fetch("https://api.anthropic.com/v1/messages",{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:1000,messages:[{role:"user",content:prompt}]})
+    });
+    if(!res.ok)throw new Error("API error: "+res.status);
+    const data=await res.json();
+    if(!data.content||!data.content[0])throw new Error("Empty response");
+    let text=data.content.map(i=>i.text||"").join("").trim();
+    // Strip any markdown fences
+    text=text.replace(/^```json\s*/i,"").replace(/^```\s*/i,"").replace(/\s*```$/,"").trim();
+    const parsed=JSON.parse(text);
+    if(!parsed.questions||parsed.questions.length===0)throw new Error("No questions");
+    questions=parsed.questions;
+    renderQuiz(parsed.title||topic+" — GATE Practice");
+  }catch(e){
+    errEl.textContent="Generation failed: "+e.message+". Please try again.";
+    errEl.style.display='block';
+    document.getElementById('quiz-area').innerHTML='';
+  }finally{
+    btn.disabled=false;btn.textContent='Generate Test ⚡';
+    btn.style.background='linear-gradient(135deg,#0ea5e9,#0284c7)';btn.style.color='#fff';
+  }
+}
+
+function renderQuiz(title){
+  document.getElementById('quiz-area').innerHTML=`
+    <div style="font-size:18px;margin-bottom:18px;color:var(--text);">${title}</div>
+    <div class="score-box" id="score-box">
+      <div style="font-size:42px;color:var(--accent);font-weight:700;" id="score-num"></div>
+      <div style="color:var(--muted);font-size:14px;margin-top:5px;" id="score-lbl"></div>
+    </div>
+    <div id="q-container"></div>
+    <button class="submit-btn" id="sub-btn" disabled style="background:rgba(255,255,255,0.04);color:rgba(148,163,184,0.3);" onclick="submitQuiz()">
+      Submit Test (0/${questions.length} answered)
+    </button>`;
+  renderQs();
+}
+
+function renderQs(){
+  const c=document.getElementById('q-container');c.innerHTML='';
+  questions.forEach(q=>{
+    const ua=userAnswers[q.id];
+    const d=document.createElement('div');d.className='q-card';
+    d.innerHTML=`<div class="q-num">Q${q.id} OF ${questions.length}</div>
+      <div class="q-text">${q.question}</div>
+      <div id="opts-${q.id}">${q.options.map(opt=>{
+        const l=opt.charAt(0);
+        let cls='opt';
+        if(quizSubmitted){if(l===q.answer)cls+=' correct';else if(ua===l)cls+=' wrong';}
+        else if(ua===l)cls+=' sel';
+        return `<button class="${cls}"${quizSubmitted?' disabled':''} onclick="pick(${q.id},'${l}')">${opt}</button>`;
+      }).join('')}</div>
+      ${quizSubmitted?`<div class="expl">💡 ${q.explanation}</div>`:''}`;
+    c.appendChild(d);
+  });
+  updSub();
+}
+
+function pick(qid,l){
+  if(quizSubmitted)return;
+  userAnswers[qid]=l;
+  document.querySelectorAll(`#opts-${qid} .opt`).forEach(b=>{b.classList.remove('sel');if(b.textContent.charAt(0)===l)b.classList.add('sel');});
+  updSub();
+}
+function updSub(){
+  const btn=document.getElementById('sub-btn');if(!btn)return;
+  const n=Object.keys(userAnswers).length,ready=n>=questions.length;
+  btn.textContent=`Submit Test (${n}/${questions.length} answered)`;
+  btn.style.background=ready?'linear-gradient(135deg,#10b981,#059669)':'rgba(255,255,255,0.04)';
+  btn.style.color=ready?'#fff':'rgba(148,163,184,0.3)';
+  btn.disabled=!ready;
+}
+function submitQuiz(){
+  quizSubmitted=true;
+  const score=questions.filter(q=>userAnswers[q.id]===q.answer).length;
+  const sb=document.getElementById('score-box');sb.style.display='block';
+  document.getElementById('score-num').textContent=`${score}/${questions.length}`;
+  document.getElementById('score-lbl').textContent=score===questions.length?'Perfect Score! 🏆':score>=questions.length*0.7?'Great Job! 👏':'Keep Practicing! 💪';
+  renderQs();
+  const btn=document.getElementById('sub-btn');
+  btn.textContent='🔄 Generate New Test';btn.style.background='linear-gradient(135deg,#0ea5e9,#0284c7)';btn.style.color='#fff';btn.disabled=false;
+  btn.onclick=()=>{questions=[];userAnswers={};quizSubmitted=false;document.getElementById('quiz-area').innerHTML='';};
+}
+
+// ── MATERIALS ─────────────────────────────────────────────────────────────
+function initMaterials(){
+  const g=document.getElementById('mat-grid');g.innerHTML='';
+  MATERIALS.forEach((m,i)=>{
+    const d=document.createElement('div');d.className='mat-card';
+    d.style.border=`1px solid ${m.color}22`;
+    d.innerHTML=`<div style="color:${m.color};font-size:15px;font-weight:500;margin-bottom:4px;">${m.name}</div>
+      <div style="font-size:11px;color:var(--muted2);">${m.topics.length} topics · ${m.books.length} books</div>`;
+    d.onclick=()=>showMat(m,d);
+    g.appendChild(d);
+  });
+}
+function showMat(m,card){
+  document.querySelectorAll('.mat-card').forEach(c=>c.style.border='1px solid rgba(255,255,255,0.05)');
+  card.style.border=`1px solid ${m.color}`;
+  const det=document.getElementById('mat-detail');
+  det.classList.add('open');
+  det.innerHTML=`<div style="font-size:18px;color:var(--accent);margin-bottom:18px;">${m.name}</div>
+    <div style="font-size:11px;letter-spacing:2px;color:var(--muted2);text-transform:uppercase;margin-bottom:10px;">📖 Recommended Books</div>
+    ${m.books.map(b=>`<div class="book-item">${b.t}<a href="${b.pdf}" target="_blank">📥 Free PDF/eBook</a></div>`).join('')}
+    <br/>
+    <div style="font-size:11px;letter-spacing:2px;color:var(--muted2);text-transform:uppercase;margin-bottom:10px;">📄 Free Notes PDF</div>
+    <div style="margin-bottom:18px;"><a href="${m.notes}" target="_blank" class="btn-dl btn-blue" style="display:inline-block;">📥 Download Notes — ${m.name}</a></div>
+    <div style="font-size:11px;letter-spacing:2px;color:var(--muted2);text-transform:uppercase;margin-bottom:10px;">📋 Topics to Cover</div>
+    <div class="topic-tags">${m.topics.map(t=>`<span class="t-tag">${t}</span>`).join('')}</div>
+    <div class="pro-tip">💡 <strong>Pro Tip:</strong> ${m.tip}</div>`;
+}
+
+// ── USERS ADMIN ───────────────────────────────────────────────────────────
+function initUsers(){
+  const tbody=document.getElementById('user-tbody');tbody.innerHTML='';
+  const users=getUsers();
+  if(users.length===0){tbody.innerHTML='<tr><td colspan="4" style="text-align:center;color:var(--muted);padding:30px;">No students registered yet.</td></tr>';return;}
+  users.forEach((u,i)=>{
+    tbody.innerHTML+=`<tr><td>${i+1}</td><td>${u.name}</td><td>${u.email}</td><td>${u.registeredOn||'—'}</td></tr>`;
+  });
+}
+
+function exportExcel(){
+  const users=getUsers();
+  if(users.length===0){alert("No users registered yet!");return;}
+  let csv="No,Name,Email,Registered On\n";
+  users.forEach((u,i)=>{csv+=`${i+1},"${u.name}","${u.email}","${u.registeredOn||''}"\n`;});
+  const blob=new Blob([csv],{type:'text/csv'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);
+  a.download='GateCivil_Users.csv';a.click();
+}
+</script>
+</body>
+</html>
